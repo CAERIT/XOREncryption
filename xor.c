@@ -10,6 +10,8 @@ void xor_encrypt_decrypt(char *data, const char *key) {
     }
 }
 
+//comment to test commits
+
 int main() {
     char choice[10];
     printf("Do you want to encrypt or decrypt? ");

@@ -10,6 +10,11 @@ void xor_encrypt_decrypt(char *data, const char *key) {
     }
 }
 
+void flush_stdin(void) { 
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+} //loop thorugh chars in stdin and do nothing to them
+
 //comment to test commits
 
 int main() {
@@ -18,12 +23,16 @@ int main() {
     scanf("%s", choice);
 
     if (strcmp(choice, "encrypt") == 0) {
-        char message[MAX_KEY_LENGTH];
+        char message[MAX_KEY_LENGTH]; 
         char filename[MAX_KEY_LENGTH];
         char key[MAX_KEY_LENGTH];
 
+        //first issue encountered, fgets reads the \n comming from the scanf input, returning early
+        flush_stdin();
+        // this can be remiated by "flushing the STDIN" which removes all chars
+
         printf("Enter the string to encrypt: ");
-        fgets(message, MAX_KEY_LENGTH, stdin);
+        fgets(message, MAX_KEY_LENGTH, stdin); 
         message[strcspn(message, "\n")] = '\0';
 
         printf("Enter the filename to save the encrypted data: ");

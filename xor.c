@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h> //needed to make fread stop crashing
 
 #define MAX_KEY_LENGTH 100
 
@@ -15,14 +16,13 @@ void flush_stdin(void) {
     while ((c = getchar()) != '\n' && c != EOF);
 } //loop thorugh chars in stdin and do nothing to them
 
-//comment to test commits
 
 int main() {
     char choice[10];
-    printf("Do you want to encrypt or decrypt? ");
+    printf("Do you want to (e)ncrypt or (d)ecrypt? ");
     scanf("%s", choice);
 
-    if (strcmp(choice, "encrypt") == 0) {
+    if (strcmp(choice, "e") == 0) {
         char message[MAX_KEY_LENGTH]; 
         char filename[MAX_KEY_LENGTH];
         char key[MAX_KEY_LENGTH];
@@ -50,7 +50,8 @@ int main() {
         xor_encrypt_decrypt(message, key);
         fwrite(message, sizeof(char), strlen(message), file);
         fclose(file);
-    } else if (strcmp(choice, "decrypt") == 0) {
+    }
+    else if (strcmp(choice, "d") == 0) {
         char filename[MAX_KEY_LENGTH];
         char key[MAX_KEY_LENGTH];
 
@@ -66,21 +67,30 @@ int main() {
             return 1;
         }
 
-        fseek(file, 0, SEEK_END);
-        long size = ftell(file);
-        fseek(file, 0, SEEK_SET);
+        fseek(file, 0, SEEK_END); //sets pointer to EOF
+        long size = ftell(file); // sets size to current postion of file (end = size)
+        fseek(file, 0, SEEK_SET); //returns pointer to start
+
+        if (size < 0) {
+            printf("negative sized file");
+            return 1;
+        }
 
         char *data = malloc(size + 1);
+
         if (data == NULL) {
             fprintf(stderr, "Memory allocation failed\n");
             fclose(file);
             return 1;
         }
-
+        
+        printf("this line runs \n");
         fread(data, sizeof(char), size, file);
+        printf("this line does not run \n");
+
         data[size] = '\0';
         fclose(file);
-
+      
         xor_encrypt_decrypt(data, key);
         printf("Decrypted message: %s\n", data);
         free(data);

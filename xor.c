@@ -4,9 +4,10 @@
 
 #define MAX_KEY_LENGTH 100
 
-void xor_encrypt_decrypt(char *data, const char *key) {
-    int key_len = strlen(key);
-    for (int i = 0; data[i] != '\0'; i++) {
+void xor_encrypt_decrypt(char* data, size_t data_len, const char* key) {
+    size_t key_len = strlen(key);
+
+    for (size_t i = 0; i < data_len; i++) {
         data[i] ^= key[i % key_len];
     }
 }
@@ -46,9 +47,10 @@ int main() {
             fprintf(stderr, "Error opening file for writing\n");
             return 1;
         }
+        size_t len = strlen(message);
 
-        xor_encrypt_decrypt(message, key);
-        fwrite(message, sizeof(char), strlen(message), file);
+        xor_encrypt_decrypt(message, len, key);
+        fwrite(message, 1, len, file);
         fclose(file);
     }
     else if (strcmp(choice, "d") == 0) {
@@ -80,19 +82,18 @@ int main() {
 
         if (data == NULL) {
             fprintf(stderr, "Memory allocation failed\n");
-            fclose(file);
+            fclose(file);   
             return 1;
         }
         
-        printf("this line runs \n");
         fread(data, sizeof(char), size, file);
-        printf("this line does not run \n");
 
-        data[size] = '\0';
-        fclose(file);
       
-        xor_encrypt_decrypt(data, key);
+        xor_encrypt_decrypt(data,size, key);
+        data[size] = '\0';
+
         printf("Decrypted message: %s\n", data);
+        fclose(file);
         free(data);
     } else {
         printf("Invalid choice. Please enter 'encrypt' or 'decrypt'.\n");
